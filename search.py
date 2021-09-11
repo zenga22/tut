@@ -88,6 +88,12 @@ def search(args):
             shows_qry.user_info.watched == True  # noqa: E712
         )
 
+    # Handle protected arg
+    if args.protected:
+        params.append(
+            shows_qry.user_info.protected == True  # noqa: E712
+        )
+
     # Handle season arg
     if args.season:
         params.append(

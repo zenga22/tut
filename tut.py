@@ -15,7 +15,7 @@ import library
 import config
 import argparse
 
-VERSION = "0.0.2"
+VERSION = "0.1.0"
 
 EXIT_CODE_OK = 0
 EXIT_CODE_ERROR = 1
@@ -112,6 +112,8 @@ def main():
                                     "bad recordings")
         sp_search.add_argument('--watched', action='store_true',
                                help='only include watched recordings')
+        sp_search.add_argument('--protected', action='store_true',
+                               help='only include protected recordings')
         sp_search.add_argument('--full', action='store_true',
                                help='dump/display full record details')
         sp_search.add_argument('--tms-id',
@@ -212,7 +214,7 @@ def main():
         if args.command == 'search':
             if not (args.after or args.before or args.full
                     or args.state or args.term or args.type
-                    or args.limit or args.watched
+                    or args.limit or args.watched or args.protected
                     or args.episode or args.season
                     or args.tms_id or args.id or args.id_list
                     or args.duration
