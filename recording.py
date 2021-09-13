@@ -65,9 +65,7 @@ class Recording(Airing):
                 # maybe TMSIDs that start with "SH"
                 if self.episode['season_number'] == 0 \
                         and self.episode['number'] == 0:
-                    return self.airing_details['datetime']\
-                        .replace("-", "").replace(":", "")\
-                        .replace("T", "_").replace("Z", "")
+                    return convert_datestr(self.airing_details['datetime'], '%Y-%m-%d_%H%M')
                 else:
                     return self.get_epsiode_num()
             # yuck - "105" = season 1 + episode 5
@@ -86,10 +84,16 @@ class Recording(Airing):
             title = self.airing_details['show_title']
             out = config.get('Output Locations', 'TV') + '/'
             out += title + '/'
-            out += 'Season {:02}'.format(self.episode['season_number']) + '/'
-            out += title + \
-                ' - s{:02}'.format(self.episode['season_number']) + \
-                'e{:02}'.format(self.episode['number'])
+            # Use date aired if no season/episode to prevent overwriting
+            # different dated videos.
+            if self.episode['season_number'] == 0 \
+                    and self.episode['number'] == 0:
+                out += convert_datestr(self.airing_details['datetime'], '%Y-%m-%d_%H%M')
+            else:
+                out += 'Season {:02}'.format(self.episode['season_number']) + '/'
+                out += title + \
+                    ' - s{:02}'.format(self.episode['season_number']) + \
+                    'e{:02}'.format(self.episode['number'])
             return out + "." + ext
         elif self.type == 'movie':
             out = config.get('Output Locations', 'Movies') + '/'

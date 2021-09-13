@@ -22,7 +22,7 @@ That will find a **show** with one or more recordings that only managed to recor
 
 
 ##### Requirements
-* Python 3 (tested against Python 3.7.3 on Ubuntu).
+* Python 3 (tested against Python 3.8.10 on Ubuntu).
 
 * Tested against Tablo firmware:
     * v.2.2.26   
@@ -183,6 +183,9 @@ or:
 
 ###### Find all recordings 30 seconds or shorter
 `./tut.py -L search --duration 30s`
+
+###### Find all recordings with protected status = True
+`./tut.py -L search --protected`
 
 ### Copy/Archive recordings
 Copy recordings off your Tablo. Currently there are no options to do anything but copy a full recording intact (compress more, downgrade, etc.).
