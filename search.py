@@ -19,21 +19,32 @@ def search(args):
 
     # Handle search "term"arg - this checks title and description
     if args.term:
-        params.append(
-            shows_qry.airing_details.show_title.matches(
-                f'.*{args.term}.*', flags=re.IGNORECASE
+        if args.casesensitive:
+            params.append(
+                shows_qry.airing_details.show_title.matches(
+                    f'.*{args.term}.*'
+                )
+                |
+                shows_qry.episode.description.matches(
+                    f'.*{args.term}.*'
+                )
             )
-            |
-            shows_qry.episode.description.matches(
-                f'.*{args.term}.*', flags=re.IGNORECASE
+        else:
+            params.append(
+                shows_qry.airing_details.show_title.matches(
+                    f'.*{args.term}.*', flags=re.IGNORECASE
+                )
+                |
+                shows_qry.episode.description.matches(
+                    f'.*{args.term}.*', flags=re.IGNORECASE
+                )
+                # Gah, should work, always bombs. Suspect on non-episodes
+                # though episode.description is fine?
+                # |
+                # shows_qry.episode['title'].matches(
+                #     f'.*{args.term}.*', flags=re.IGNORECASE
+                # )
             )
-            # Gah, should work, always bombs. Suspect on non-episodes
-            # though episode.description is fine?
-            # |
-            # shows_qry.episode['title'].matches(
-            #     f'.*{args.term}.*', flags=re.IGNORECASE
-            # )
-        )
 
     # Handle "after" date arg
     if args.after:
@@ -86,6 +97,12 @@ def search(args):
     if args.watched:
         params.append(
             shows_qry.user_info.watched == True  # noqa: E712
+        )
+
+    # Handle protected arg
+    if args.protected:
+        params.append(
+            shows_qry.user_info.protected == True  # noqa: E712
         )
 
     # Handle season arg

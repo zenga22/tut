@@ -26,7 +26,8 @@ class Recording(Airing):
                 f"{sep}{self.episode['description']}\n"
                 f"{sep}Season: {self.get_epsiode_num()}"
                 f"  Status: {self.video_details['state']}"
-                f"  Watched: {self.user_info['watched']}\n"
+                f"  Watched: {self.user_info['watched']}"
+                f"  Protected: {self.user_info['protected']}\n"
                 f"{sep}Length: {self.get_dur()}\n"
                 f"{sep}Type: {self.type}"
                 f"  TMS ID: {self.episode['tms_id']}"
@@ -39,8 +40,31 @@ class Recording(Airing):
             print(
                 convert_datestr(self.airing_details['datetime']) + " - " +
                 f"{self.airing_details['show_title']}\n"
-                f"  Type: {self.type}"
+                f"  Status: {self.video_details['state']}"
+                f"  Watched: {self.user_info['watched']}"
+                f"  Protected: {self.user_info['protected']}\n"
+                f"{sep}Length: {self.get_dur()}\n"
+                f"{sep}Type: {self.type}"
+                f"  TMS ID: {self.movie_airing['tms_id']}"
+                f"  Rec Object ID: {self.object_id}"
             )
+            if error:
+                print(f"{sep}ERROR: {error}")
+        elif self.type == 'event':
+            print(
+                convert_datestr(self.airing_details['datetime']) + " - " +
+                f"{self.airing_details['show_title']}" +  ": " +
+                f"{self.event['title']}\n"
+                f"  Status: {self.video_details['state']}"
+                f"  Watched: {self.user_info['watched']}"
+                f"  Protected: {self.user_info['protected']}\n"
+                f"{sep}Length: {self.get_dur()}\n"
+                f"{sep}Type: {self.type}"
+                f"  TMS ID: {self.event['tms_id']}"
+                f"  Rec Object ID: {self.object_id}"
+            )
+            if error:
+                print(f"{sep}ERROR: {error}")
         else:
             self.dump_info()
 
@@ -64,9 +88,7 @@ class Recording(Airing):
                 # maybe TMSIDs that start with "SH"
                 if self.episode['season_number'] == 0 \
                         and self.episode['number'] == 0:
-                    return self.airing_details['datetime']\
-                        .replace("-", "").replace(":", "")\
-                        .replace("T", "_").replace("Z", "")
+                    return convert_datestr(self.airing_details['datetime'], '%Y-%m-%d_%H%M')
                 else:
                     return self.get_epsiode_num()
             # yuck - "105" = season 1 + episode 5
@@ -85,15 +107,27 @@ class Recording(Airing):
             title = self.airing_details['show_title']
             out = config.get('Output Locations', 'TV') + '/'
             out += title + '/'
-            out += 'Season {:02}'.format(self.episode['season_number']) + '/'
-            out += title + \
-                ' - s{:02}'.format(self.episode['season_number']) + \
-                'e{:02}'.format(self.episode['number'])
+            # Use date aired if no season/episode to prevent skipping/overwriting
+            # different dated videos.
+            if self.episode['season_number'] == 0 \
+                    and self.episode['number'] == 0:
+                out += convert_datestr(self.airing_details['datetime'], '%Y-%m-%d_%H%M')
+            else:
+                out += 'Season {:02}'.format(self.episode['season_number']) + '/'
+                out += title + \
+                    ' - s{:02}'.format(self.episode['season_number']) + \
+                    'e{:02}'.format(self.episode['number'])
             return out + "." + ext
         elif self.type == 'movie':
             out = config.get('Output Locations', 'Movies') + '/'
             out += f"{self.airing_details['show_title']}"
             out += f" - {self.movie_airing['release_year']}"
+            return out+"." + ext
+        elif self.type == 'event':
+            out = config.get('Output Locations', 'TV') + '/'
+            out += f"{self.airing_details['show_title']}" + '/'
+            out += f"{self.event['title']}" + ' '
+            out += convert_datestr(self.airing_details['datetime'], '%Y-%m-%d_%H%M')
             return out+"." + ext
         else:
             return f"{self.type } is UNDEFINED"
