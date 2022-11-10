@@ -22,17 +22,21 @@ That will find a **show** with one or more recordings that only managed to recor
 
 
 ##### Requirements
-* Python 3 (tested against Python 3.8.10 on Ubuntu).
+* Python 3 (tested against Python 3.10.6 on Ubuntu).
 
 * Tested against Tablo firmware:
-    * v.2.2.26   
+    * v 2.2.26
+    * v 2.2.36   
 
 
 ### Installation
 Download and unpack the 
-[zip of this project](https://github.com/jessedp/tut/archive/master.zip) 
-or clone it. Go there and...
-* run `pip install -r requirements.xt`
+[zip of this project](https://github.com/zenga22/tut/archive/master.zip) 
+
+or clone it from [GitHub](https://github.com/zenga22/tut).
+ 
+Go to the created directory and 
+* run `pip3 install -r requirements.txt`
 
 _You maybe want to run this in a [virtualenv](https://virtualenv.pypa.io/en/latest/)_
 
@@ -78,6 +82,36 @@ optional arguments:
   -v, --verbose         amount of detail to display add vs (-vvvv) for maximum
                         amount
   --version             show program's version number and exit
+```
+#### Command Help
+
+Running `./tut.py search --help` gives you:
+
+```
+usage: tut.py search [-h] [-t TERM] [-a AFTER] [-b BEFORE] [--limit LIMIT] [--season SEASON] [--episode EPISODE] [--state {finished,failed,recording}]
+                     [--type {episode,movie,sport,programs}] [--duration DURATION] [--watched] [--protected] [--full] [--tms-id TMS_ID] [--id ID] [--casesensitive]
+
+options:
+  -h, --help            show this help message and exit
+  -t TERM, --term TERM  search title/description for this
+  -a AFTER, --after AFTER
+                        only recordings after this date
+  -b BEFORE, --before BEFORE
+                        only recordings before this date
+  --limit LIMIT         only recordings in this state
+  --season SEASON       episodes with this season
+  --episode EPISODE     episodes with this episode number
+  --state {finished,failed,recording}
+                        only recordings in this state
+  --type {episode,movie,sport,programs}
+                        only include these recording types
+  --duration DURATION   recordings less than this length (28m, 10s, 1h. etc) - useful for culling bad recordings
+  --watched             only include watched recordings
+  --protected           only include protected recordings
+  --full                dump/display full record details
+  --tms-id TMS_ID       select by TMS Id (probably unique)
+  --id ID               select by Tablo Object Id(definitely unique)
+  --casesensitive       case-sensitive search for terms
 ```
 
 ### Configure
@@ -153,13 +187,17 @@ Run `./tut.py search` to see the numerous options available.
 
 A few examples follow. Note the combination of flags. 
 
-###### All recordings with "colbert" in the title or description:
+###### All recordings with "colbert" (case insensitive) in the title or description:
 
 `./tut.py search colbert`   
 
 or:
 
 `./tut.py search --term colbert`
+
+###### Search for terms case-sensitive
+
+`./tut.py search --term "NOVA"  --casesensitive`
 
 ###### Or limit that to only recordings after a specific date:
 
@@ -187,6 +225,7 @@ or:
 ###### Find all recordings with protected status = True
 `./tut.py -L search --protected`
 
+
 ### Copy/Archive recordings
 Copy recordings off your Tablo. Currently there are no options to do anything but copy a full recording intact (compress more, downgrade, etc.).
 
@@ -211,7 +250,8 @@ _Note_: you'll have to add a `--yes` flag to make the delete actually occur.
  
 ### Acknowledgements
  This wouldn't have been made without: 
- * [the code for the Kodi add-on](https://github.com/Nuvyyo/script.tablo) from the Nuvyyo folks. You'll find the slightly modified version of it  `tablo` module.
  
+ * [Original tut GitHub project by Jessedp](https://github.com/jessedp/tut)
+ * [the code for the Kodi add-on](https://github.com/Nuvyyo/script.tablo) from the Nuvyyo folks. You'll find the slightly modified version of it  `tablo` module.
  * [TinyDB](https://github.com/msiemens/tinydb)
  

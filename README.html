@@ -1,0 +1,183 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" lang="" xml:lang="">
+<head>
+  <meta charset="utf-8" />
+  <meta name="generator" content="pandoc" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes" />
+  <title>README</title>
+  <style>
+    code{white-space: pre-wrap;}
+    span.smallcaps{font-variant: small-caps;}
+    span.underline{text-decoration: underline;}
+    div.column{display: inline-block; vertical-align: top; width: 50%;}
+    div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+    ul.task-list{list-style: none;}
+  </style>
+</head>
+<body>
+<h1 id="tut---tablo-user-tools">Tut - Tablo User Tools <a name="tut"></a></h1>
+<p><strong>Tut</strong> lets you mess with your <a href="https://www.tablotv.com/">Tablo</a>. Some things it does:</p>
+<ul>
+<li>automatically finds your Tablo (there are options if you have multiples)</li>
+<li>builds a library of your recordings</li>
+<li>display stats about your library/recordings</li>
+<li>a large number of search options</li>
+<li>search/display <em>incomplete</em> recordings</li>
+</ul>
+<p>Matching searches can than be used to: * <strong>delete</strong> recordings from your Tablo * <strong>copy</strong> recordings to wherever</p>
+<p>Here’s a fun example that <em>could</em> be used to cleanup crappy recordings on your Tablo: <code>shell script ./tut.py -L library --incomplete 70 | ./tut.py delete</code> That will find a <strong>show</strong> with one or more recordings that only managed to record 70% of the show and delete them.</p>
+<h5 id="requirements">Requirements</h5>
+<ul>
+<li><p>Python 3 (tested against Python 3.10.6 on Ubuntu).</p></li>
+<li><p>Tested against Tablo firmware:</p>
+<ul>
+<li>v 2.2.26</li>
+<li>v 2.2.36</li>
+</ul></li>
+</ul>
+<h3 id="installation">Installation</h3>
+<p>Download and unpack the <a href="https://github.com/zenga22/tut/archive/master.zip">zip of this project</a></p>
+<p>or clone it from <a href="https://github.com/zenga22/tut">GitHub</a>.</p>
+<p>Go to the created directory and * run <code>pip3 install -r requirements.txt</code></p>
+<p><em>You maybe want to run this in a <a href="https://virtualenv.pypa.io/en/latest/">virtualenv</a></em></p>
+<h3 id="kick-the-wheels">Kick the wheels</h3>
+<p>With any luck after you’ve installed it, you can run these commands and it’ll do/display a bunch of stuff about your Tablo. See below for details on all sorts of other stuff you can do.</p>
+<pre><code>./tut.py config --discover
+./tut.py library --build
+./tut.py library --stats
+./tut.py search --limit 2</code></pre>
+<h3 id="detailed-usage">Detailed Usage</h3>
+<p>Run something like:</p>
+<ul>
+<li><code>./tut.py</code></li>
+<li><code>python tut.py</code></li>
+<li><code>python3 tut.py</code></li>
+</ul>
+<p>and you should see something like:</p>
+<pre><code>usage: tut.py [-h] [--dry-run] [-L] [-v] [--version]
+              {config,library,search,copy,delete} ...
+
+Available commands:
+  {config,library,search,copy,delete}
+    config              manage configuration options
+    library             manage the local library of recordings
+    search              ways to search your library
+    copy                copy recordings somewhere
+    delete              delete recordings from the Tablo device
+
+optional arguments:
+  -h, --help            show this help message and exit
+  --dry-run             show what would happen, but don&#39;t change anything
+  -L, --id-list         if possible, only output a list of matching Object Ids
+                        - Pipe this into other commands. (overrides --full and
+                        any other output)
+  -v, --verbose         amount of detail to display add vs (-vvvv) for maximum
+                        amount
+  --version             show program&#39;s version number and exit</code></pre>
+<h4 id="command-help">Command Help</h4>
+<p>Running <code>./tut.py search --help</code> gives you:</p>
+<pre><code>usage: tut.py search [-h] [-t TERM] [-a AFTER] [-b BEFORE] [--limit LIMIT] [--season SEASON] [--episode EPISODE] [--state {finished,failed,recording}]
+                     [--type {episode,movie,sport,programs}] [--duration DURATION] [--watched] [--protected] [--full] [--tms-id TMS_ID] [--id ID] [--casesensitive]
+
+options:
+  -h, --help            show this help message and exit
+  -t TERM, --term TERM  search title/description for this
+  -a AFTER, --after AFTER
+                        only recordings after this date
+  -b BEFORE, --before BEFORE
+                        only recordings before this date
+  --limit LIMIT         only recordings in this state
+  --season SEASON       episodes with this season
+  --episode EPISODE     episodes with this episode number
+  --state {finished,failed,recording}
+                        only recordings in this state
+  --type {episode,movie,sport,programs}
+                        only include these recording types
+  --duration DURATION   recordings less than this length (28m, 10s, 1h. etc) - useful for culling bad recordings
+  --watched             only include watched recordings
+  --protected           only include protected recordings
+  --full                dump/display full record details
+  --tms-id TMS_ID       select by TMS Id (probably unique)
+  --id ID               select by Tablo Object Id(definitely unique)
+  --casesensitive       case-sensitive search for terms</code></pre>
+<h3 id="configure">Configure</h3>
+<p>First things first, get your Tablo set up:</p>
+<p><code>./tut.py config --discover</code></p>
+<p>Want to see some gory details of what happened there?</p>
+<p><code>./tut.py -vvv config --discover</code> (more v, more info)</p>
+<p>Then try:</p>
+<p><code>./tut.py config --view</code></p>
+<p>Possibly you want to look at the config file it told you exists?</p>
+<h3 id="your-library">Your Library</h3>
+<p>Your “Library” is a local copy of recording data <strong>at the time</strong> you <em>build</em> it.</p>
+<h5 id="build-it">Build it</h5>
+<p>Before you can do anything useful, you’ll need to build the local cache/library of your recordings:</p>
+<p><code>./tut.py library --build</code></p>
+<p>A slow run including 630 recordings takes about 40 sec. </p>
+<h5 id="general-library-stats">General library stats</h5>
+<p><code>./tut.py library --stats</code></p>
+<p>And you’ll see something like:</p>
+<pre><code>Overview
+--------------------------------------------------
+Total Recordings: 609
+Total Watched: 65
+
+By Current Recording State
+--------------------------------------------------
+Finished         : 577
+Failed           : 32
+Recording        : 0
+
+By Recording Type
+--------------------------------------------------
+Episodes/Series  : 608
+Movies           : 1
+Sports/Events    : 0
+Programs         : 0</code></pre>
+<h5 id="look-for-incomplete-recordings">Look for Incomplete recordings</h5>
+<p>This attempts to group recordings by the show/episode they belong to help determine what is unsalvageable. <code>shell script ./tut.py library --incomplete</code><br />
+<em>OR</em>, just find the obviously unsalvageable ones. (70 means 70% or the full show was recorded) <code>shell script ./tut.py library --incomplete 70</code><br />
+You can also pipe the output to delete them like so: <code>shell script ./tut.py -L library --incomplete 70 | ./tut.py delete</code></p>
+<h3 id="search-the-library">Search (the Library)</h3>
+<p>There are a number of ways to search your library. This will be useful in specifying recordings you want to work with later.</p>
+<p><strong>Important</strong>: use the <strong>-L</strong> flag with <em>any</em> search to create a list that can be piped into other opertaions.</p>
+<p>Run <code>./tut.py search</code> to see the numerous options available.</p>
+<p>A few examples follow. Note the combination of flags.</p>
+<h6 id="all-recordings-with-colbert-case-insensitive-in-the-title-or-description">All recordings with “colbert” (case insensitive) in the title or description:</h6>
+<p><code>./tut.py search colbert</code></p>
+<p>or:</p>
+<p><code>./tut.py search --term colbert</code></p>
+<h6 id="search-for-terms-case-sensitive">Search for terms case-sensitive</h6>
+<p><code>./tut.py search --term "NOVA"  --casesensitive</code></p>
+<h6 id="or-limit-that-to-only-recordings-after-a-specific-date">Or limit that to only recordings after a specific date:</h6>
+<p><code>./tut.py search colbert --after 2019-07-19</code></p>
+<h6 id="return-all-failed-recordings">Return all Failed recordings:</h6>
+<p><code>./tut.py search --state failed</code></p>
+<h6 id="return-at-most-3-failed-recordings">Return at most 3 Failed recordings:</h6>
+<p><code>./tut.py search --state failed --limit 3</code></p>
+<h6 id="return-all-the-movies">Return all the Movies:</h6>
+<p><code>./tut.py search --type movie</code></p>
+<h6 id="return-all-the-movies-but-dump-the-full-data-record">Return all the Movies, but dump the full data record:</h6>
+<p><code>./tut.py search --type movie --full</code></p>
+<h6 id="find-all-recordings-30-seconds-or-shorter">Find all recordings 30 seconds or shorter</h6>
+<p><code>./tut.py -L search --duration 30s</code></p>
+<h6 id="find-all-recordings-with-protected-status-true">Find all recordings with protected status = True</h6>
+<p><code>./tut.py -L search --protected</code></p>
+<h3 id="copyarchive-recordings">Copy/Archive recordings</h3>
+<p>Copy recordings off your Tablo. Currently there are no options to do anything but copy a full recording intact (compress more, downgrade, etc.).</p>
+<p>Do a search, add the <strong>-L</strong> flag and pipe it into <strong>copy</strong>:</p>
+<p><code>./tut.py -L search colbert | ./tut.py copy</code></p>
+<p>Currently this doesn’t: * try to put incomplete recordings together - as such, doesn’t deal with TMS IDs to do that</p>
+<h3 id="delete-recordings">Delete recordings</h3>
+<p>Do a search, add the <strong>-L</strong> flag and pipe it into delete:</p>
+<p><code>./tut.py -L search --duration 30s | ./tut.py delete</code></p>
+<p><em>Note</em>: you’ll have to add a <code>--yes</code> flag to make the delete actually occur.</p>
+<h3 id="acknowledgements">Acknowledgements</h3>
+<p>This wouldn’t have been made without:</p>
+<ul>
+<li><a href="https://github.com/jessedp/tut">Original tut GitHub project by Jessedp</a></li>
+<li><a href="https://github.com/Nuvyyo/script.tablo">the code for the Kodi add-on</a> from the Nuvyyo folks. You’ll find the slightly modified version of it <code>tablo</code> module.</li>
+<li><a href="https://github.com/msiemens/tinydb">TinyDB</a></li>
+</ul>
+</body>
+</html>

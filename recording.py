@@ -40,8 +40,31 @@ class Recording(Airing):
             print(
                 convert_datestr(self.airing_details['datetime']) + " - " +
                 f"{self.airing_details['show_title']}\n"
-                f"  Type: {self.type}"
+                f"  Status: {self.video_details['state']}"
+                f"  Watched: {self.user_info['watched']}"
+                f"  Protected: {self.user_info['protected']}\n"
+                f"{sep}Length: {self.get_dur()}\n"
+                f"{sep}Type: {self.type}"
+                f"  TMS ID: {self.movie_airing['tms_id']}"
+                f"  Rec Object ID: {self.object_id}"
             )
+            if error:
+                print(f"{sep}ERROR: {error}")
+        elif self.type == 'event':
+            print(
+                convert_datestr(self.airing_details['datetime']) + " - " +
+                f"{self.airing_details['show_title']}" +  ": " +
+                f"{self.event['title']}\n"
+                f"  Status: {self.video_details['state']}"
+                f"  Watched: {self.user_info['watched']}"
+                f"  Protected: {self.user_info['protected']}\n"
+                f"{sep}Length: {self.get_dur()}\n"
+                f"{sep}Type: {self.type}"
+                f"  TMS ID: {self.event['tms_id']}"
+                f"  Rec Object ID: {self.object_id}"
+            )
+            if error:
+                print(f"{sep}ERROR: {error}")
         else:
             self.dump_info()
 
@@ -84,7 +107,7 @@ class Recording(Airing):
             title = self.airing_details['show_title']
             out = config.get('Output Locations', 'TV') + '/'
             out += title + '/'
-            # Use date aired if no season/episode to prevent overwriting
+            # Use date aired if no season/episode to prevent skipping/overwriting
             # different dated videos.
             if self.episode['season_number'] == 0 \
                     and self.episode['number'] == 0:
@@ -99,6 +122,12 @@ class Recording(Airing):
             out = config.get('Output Locations', 'Movies') + '/'
             out += f"{self.airing_details['show_title']}"
             out += f" - {self.movie_airing['release_year']}"
+            return out+"." + ext
+        elif self.type == 'event':
+            out = config.get('Output Locations', 'TV') + '/'
+            out += f"{self.airing_details['show_title']}" + '/'
+            out += f"{self.event['title']}" + ' '
+            out += convert_datestr(self.airing_details['datetime'], '%Y-%m-%d_%H%M')
             return out+"." + ext
         else:
             return f"{self.type } is UNDEFINED"

@@ -121,6 +121,8 @@ def main():
         sp_search.add_argument('--id', type=int,
                                help='select by Tablo Object Id'
                                     '(definitely unique)')
+        sp_search.add_argument('--casesensitive', action='store_true',
+                               help='case-sensitive search for terms')
 
         # "copy" cmd parser
         sp_copy = subparsers.add_parser('copy',
@@ -217,7 +219,7 @@ def main():
                     or args.limit or args.watched or args.protected
                     or args.episode or args.season
                     or args.tms_id or args.id or args.id_list
-                    or args.duration
+                    or args.duration or args.casesensitive
                     or search_unknown(unknown)
                     ):
                 sp_search.print_help(sys.stderr)
